@@ -1,40 +1,40 @@
 <?php
-    // Enable error reporting for debugging
+    // เปิดการรายงานข้อผิดพลาดสำหรับการดีบัก
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
 
     session_start();
     include 'config.php';
 
-    // Check if the session cart exists and is not empty
+    // ตรวจสอบว่ามี session cart และไม่ว่างเปล่า
     if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
-        $_SESSION['message'] = 'Your cart is empty!';
+        $_SESSION['message'] = 'ตะกร้าของคุณว่างเปล่า!';
         header('Location: index.php');
         exit;
     }
 
-    // Collect product IDs from the session cart
+    // รวบรวมรหัสสินค้าในตะกร้าจาก session
     $productIds = [];
     foreach ($_SESSION['cart'] as $cardId => $cardQty) {
-        $productIds[] = (int)$cardId; // Ensure product IDs are integers
+        $productIds[] = (int)$cardId; // ตรวจสอบให้แน่ใจว่ารหัสสินค้าเป็นจำนวนเต็ม
     }
 
-    // If there are no product IDs in the cart, show an error message
+    // ถ้าไม่มีรหัสสินค้าในตะกร้า แสดงข้อความข้อผิดพลาด
     if (count($productIds) == 0) {
-        $_SESSION['message'] = 'Your cart is empty!';
+        $_SESSION['message'] = 'ตะกร้าของคุณว่างเปล่า!';
         header('Location: index.php');
         exit;
     }
 
-    // Create a comma-separated list of product IDs for the query
+    // สร้างรายการรหัสสินค้าที่คั่นด้วยเครื่องหมายจุลภาคสำหรับการคิวรี
     $ids = implode(',', $productIds);
 
-    // Query to fetch product details from the database
+    // คิวรีเพื่อดึงรายละเอียดสินค้าจากฐานข้อมูล
     $query = mysqli_query($conn, "SELECT * FROM products WHERE id IN ($ids)");
 
-    // Check if the query was successful
+    // ตรวจสอบว่าการคิวรีสำเร็จหรือไม่
     if (!$query) {
-        $_SESSION['message'] = 'Failed to fetch product details: ' . mysqli_error($conn);
+        $_SESSION['message'] = 'ไม่สามารถดึงรายละเอียดสินค้าได้: ' . mysqli_error($conn);
         header('Location: index.php');
         exit;
     }
